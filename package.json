@@ -1,0 +1,25 @@
+{
+  "name": "student-information-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Student Information Management System built with a Three-Tier Cloud Architecture (React/Vite + Express/Node.js + MongoDB Atlas)",
+  "scripts": {
+    "backend:dev": "npm --prefix backend run dev",
+    "backend:start": "npm --prefix backend start",
+    "backend:test": "npm --prefix backend test",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build"
+  },
+  "keywords": [
+    "three-tier-architecture",
+    "college-assignment",
+    "student-information-system",
+    "react",
+    "express",
+    "mongodb-atlas",
+    "render",
+    "netlify"
+  ],
+  "author": "",
+  "license": "ISC"
+}
