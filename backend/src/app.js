@@ -12,15 +12,28 @@ const app = express();
 // Enable CORS with origin restriction using FRONTEND_URL
 const rawOrigins = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'http://localhost:5173';
 const allowedOrigins = rawOrigins.split(',').map((origin) => origin.trim());
+const isDev = process.env.NODE_ENV !== 'production';
 
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-      if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+      if (!origin) {
         return callback(null, true);
       }
-      return callback(new Error(`Origin ${origin} not allowed by CORS`));
+
+      // Allow if origin is explicitly in allowedOrigins list or wildcard
+      if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // In development mode, automatically allow localhost & 127.0.0.1 on any port (5173, 5174, etc.)
+      if (isDev && /^https?:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+
+      console.warn(`[CORS Warning] Origin "${origin}" is not allowed by CORS configuration.`);
+      return callback(null, false);
     },
     credentials: true,
   })
