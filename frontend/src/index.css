@@ -4,45 +4,45 @@
    ======================================================== */
 
 :root {
-  /* Brand & Accents */
-  --primary: #c4623a;
-  --primary-hover: #a94f2c;
-  --primary-light: rgba(196, 98, 58, 0.15);
-  --primary-glow: rgba(196, 98, 58, 0.35);
+  /* Brand & Accents (Midnight Blue Edition) */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: rgba(59, 130, 246, 0.15);
+  --primary-glow: rgba(59, 130, 246, 0.35);
 
-  --secondary: #5c7a4a;
-  --secondary-hover: #48603a;
-  --secondary-light: rgba(92, 122, 74, 0.15);
+  --secondary: #6366f1;
+  --secondary-hover: #4f46e5;
+  --secondary-light: rgba(99, 102, 241, 0.15);
 
   /* Status Colors */
-  --success: #5c7a4a;
-  --success-bg: rgba(92, 122, 74, 0.12);
-  --success-border: rgba(92, 122, 74, 0.3);
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --success-border: rgba(16, 185, 129, 0.3);
 
-  --warning: #b8862f;
-  --warning-bg: rgba(184, 134, 47, 0.12);
-  --warning-border: rgba(184, 134, 47, 0.3);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --warning-border: rgba(245, 158, 11, 0.3);
 
-  --danger: #b0413a;
-  --danger-hover: #8f332d;
-  --danger-bg: rgba(176, 65, 58, 0.12);
-  --danger-border: rgba(176, 65, 58, 0.3);
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --danger-border: rgba(239, 68, 68, 0.3);
 
-  /* Dark Theme Palette (Default) */
-  --bg-main: #17130f;
-  --bg-surface: #1f1a15;
-  --bg-surface-elevated: #2a241d;
-  --bg-surface-glass: rgba(31, 26, 21, 0.75);
-  --bg-card: rgba(42, 36, 29, 0.65);
-  --bg-card-hover: rgba(42, 36, 29, 0.9);
+  /* Dark Theme Palette (Midnight Blue Glassmorphism) */
+  --bg-main: #070b14;
+  --bg-surface: #0c1222;
+  --bg-surface-elevated: #131d36;
+  --bg-surface-glass: rgba(12, 18, 34, 0.85);
+  --bg-card: rgba(19, 29, 54, 0.7);
+  --bg-card-hover: rgba(25, 38, 70, 0.95);
   
-  --border-subtle: rgba(255, 245, 230, 0.08);
-  --border-medium: rgba(255, 245, 230, 0.14);
-  --border-focus: #c4623a;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.15);
+  --border-focus: #3b82f6;
 
-  --text-main: #f5efe6;
-  --text-secondary: #b3a897;
-  --text-muted: #7d7364;
+  --text-main: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
 
   /* Typography */
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -76,9 +76,9 @@ html, body {
   min-height: 100vh;
   background-color: var(--bg-main);
   background-image: 
-    radial-gradient(at 0% 0%, rgba(196, 98, 58, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(92, 122, 74, 0.10) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(184, 134, 47, 0.08) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.16) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.14) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(14, 165, 233, 0.10) 0px, transparent 50%);
   background-attachment: fixed;
   color: var(--text-main);
   font-family: var(--font-body);
@@ -167,7 +167,7 @@ a:hover {
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--primary), var(--warning));
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   border-radius: var(--radius-md);
   color: white;
   box-shadow: 0 4px 12px var(--primary-glow);
@@ -177,7 +177,7 @@ a:hover {
   font-size: 1.35rem;
   font-weight: 800;
   line-height: 1.2;
-  background: linear-gradient(to right, #f5efe6, #d6c9b6);
+  background: linear-gradient(to right, #ffffff, #94a3b8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

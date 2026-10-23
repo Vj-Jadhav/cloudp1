@@ -7,6 +7,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { logger } from './utils/logger.js';
 import { connectToDatabase, disconnectDatabase } from './db/connection.js';
 import { registerStudentTools } from './tools/index.js';
+import { registerProjectTools } from './tools/projectTools.js';
 
 // Resolve directory of current module
 const __filename = fileURLToPath(import.meta.url);
@@ -44,8 +45,9 @@ async function main() {
     version: '1.0.0',
   });
 
-  // Register all 6 verified database tools
+  // Register all database & full-stack project tools
   registerStudentTools(server);
+  registerProjectTools(server);
 
   // Connect via stdio transport immediately so Claude Desktop handshake is instant
   const transport = new StdioServerTransport();

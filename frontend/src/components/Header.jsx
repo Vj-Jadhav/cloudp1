@@ -24,7 +24,7 @@ export const Header = ({ onAddClick, healthStatus, onRefresh, loading }) => {
         <div>
           <h1 className="brand-title">Student Management Dashboard</h1>
           <div className="brand-subtitle">
-            <span>Three-Tier Cloud Architecture</span>
+            <span>Full Stack Cloud SIS</span>
             <span>•</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <Database size={13} /> MongoDB Atlas

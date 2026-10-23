@@ -1,0 +1,25 @@
+# ========================================================
+# Render Blueprint (Infrastructure-as-Code)
+# Student Information Management System - Backend Tier
+# ========================================================
+services:
+  - type: web
+    name: student-system-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DB_NAME
+        value: student_db
+      - key: FRONTEND_URL
+        sync: false
+      - key: MONGODB_URI
+        sync: false
