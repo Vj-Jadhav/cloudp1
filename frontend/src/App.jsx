@@ -83,30 +83,6 @@ export function App() {
     }
   }, []);
 
-  // Manual Refresh Handler
-  const handleManualRefresh = useCallback(async () => {
-    await Promise.all([loadStudents(), checkServerHealth()]);
-    addToast('info', 'Student records updated from MongoDB Atlas.', 'Refreshed');
-  }, [loadStudents, checkServerHealth, addToast]);
-
-  // Auto-sync on window focus and poll every 20 seconds (syncs Claude MCP additions automatically)
-  useEffect(() => {
-    checkServerHealth();
-    const onFocus = () => {
-      loadStudents();
-      checkServerHealth();
-    };
-    window.addEventListener('focus', onFocus);
-    const interval = setInterval(() => {
-      loadStudents();
-      checkServerHealth();
-    }, 20000);
-    return () => {
-      window.removeEventListener('focus', onFocus);
-      clearInterval(interval);
-    };
-  }, [loadStudents, checkServerHealth]);
-
   // Fetch Students
   const loadStudents = useCallback(async () => {
     setLoading(true);
@@ -147,9 +123,32 @@ export function App() {
     }
   }, [debouncedSearch, department, semester, page, limit, sortBy, order, addToast]);
 
+  // Manual Refresh Handler
+  const handleManualRefresh = useCallback(async () => {
+    await Promise.all([loadStudents(), checkServerHealth()]);
+    addToast('info', 'Student records updated from MongoDB Atlas.', 'Refreshed');
+  }, [loadStudents, checkServerHealth, addToast]);
+
+  // Initial load and auto-sync on window focus & periodic interval
   useEffect(() => {
     loadStudents();
-  }, [loadStudents]);
+    checkServerHealth();
+
+    const onFocus = () => {
+      loadStudents();
+      checkServerHealth();
+    };
+    window.addEventListener('focus', onFocus);
+    const interval = setInterval(() => {
+      loadStudents();
+      checkServerHealth();
+    }, 20000);
+
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      clearInterval(interval);
+    };
+  }, [loadStudents, checkServerHealth]);
 
   // List of unique departments for filter dropdown
   const departmentsList = useMemo(() => {
