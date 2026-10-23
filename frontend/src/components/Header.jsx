@@ -22,7 +22,7 @@ export const Header = ({ onAddClick, healthStatus }) => {
           <GraduationCap size={28} />
         </div>
         <div>
-          <h1 className="brand-title">Student Information Management</h1>
+          <h1 className="brand-title">Student Management Dashboard</h1>
           <div className="brand-subtitle">
             <span>Three-Tier Cloud Architecture</span>
             <span>•</span>
