@@ -1,7 +1,7 @@
 import React from 'react';
-import { GraduationCap, Plus, Database } from 'lucide-react';
+import { GraduationCap, Plus, Database, RefreshCw } from 'lucide-react';
 
-export const Header = ({ onAddClick, healthStatus }) => {
+export const Header = ({ onAddClick, healthStatus, onRefresh, loading }) => {
   const getStatusClass = () => {
     if (healthStatus === 'UP') return 'online';
     if (healthStatus === 'DEGRADED' || healthStatus === 'DOWN') return 'offline';
@@ -43,6 +43,28 @@ export const Header = ({ onAddClick, healthStatus }) => {
           <span className={`health-dot ${getStatusClass()}`} aria-hidden="true" />
           <span>{getStatusText()}</span>
         </div>
+
+        {/* Manual Refresh Button */}
+        {onRefresh && (
+          <button
+            id="btn-refresh-students"
+            className="btn btn-secondary"
+            onClick={onRefresh}
+            disabled={loading}
+            title="Refresh student records from MongoDB"
+            aria-label="Refresh student list"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <RefreshCw
+              size={16}
+              style={{
+                animation: loading ? 'spin 1s linear infinite' : 'none',
+              }}
+              aria-hidden="true"
+            />
+            <span>Refresh</span>
+          </button>
+        )}
 
         {/* Add Student CTA */}
         <button

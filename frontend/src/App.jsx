@@ -83,12 +83,29 @@ export function App() {
     }
   }, []);
 
+  // Manual Refresh Handler
+  const handleManualRefresh = useCallback(async () => {
+    await Promise.all([loadStudents(), checkServerHealth()]);
+    addToast('info', 'Student records updated from MongoDB Atlas.', 'Refreshed');
+  }, [loadStudents, checkServerHealth, addToast]);
+
+  // Auto-sync on window focus and poll every 20 seconds (syncs Claude MCP additions automatically)
   useEffect(() => {
     checkServerHealth();
-    // Poll health status every 30 seconds
-    const interval = setInterval(checkServerHealth, 30000);
-    return () => clearInterval(interval);
-  }, [checkServerHealth]);
+    const onFocus = () => {
+      loadStudents();
+      checkServerHealth();
+    };
+    window.addEventListener('focus', onFocus);
+    const interval = setInterval(() => {
+      loadStudents();
+      checkServerHealth();
+    }, 20000);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      clearInterval(interval);
+    };
+  }, [loadStudents, checkServerHealth]);
 
   // Fetch Students
   const loadStudents = useCallback(async () => {
@@ -271,7 +288,12 @@ export function App() {
   return (
     <div className="app-container">
       {/* Header */}
-      <Header onAddClick={handleOpenAdd} healthStatus={healthStatus} />
+      <Header
+        onAddClick={handleOpenAdd}
+        healthStatus={healthStatus}
+        onRefresh={handleManualRefresh}
+        loading={loading}
+      />
 
       <main>
         {/* Metric Summary Cards */}

@@ -91,6 +91,7 @@ export const connectDB = async (customUri) => {
     }
 
     const conn = await mongoose.connect(uri, {
+      dbName: process.env.DB_NAME || 'student_db',
       serverSelectionTimeoutMS: 10000,
       connectTimeoutMS: 15000,
       socketTimeoutMS: 45000,
