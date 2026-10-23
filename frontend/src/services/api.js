@@ -4,13 +4,17 @@
  * Reads backend URL from import.meta.env.VITE_API_URL without hardcoding production endpoints.
  */
 
-const RAW_API_URL =
+const RAW_API_URL = (
   import.meta.env.VITE_API_URL ||
   import.meta.env.VITE_API_BASE_URL ||
-  'http://localhost:5000/api';
+  import.meta.env.VITE_APT_URL ||
+  'http://localhost:5000/api'
+).trim().replace(/\/+$/, '');
 
-// Normalize URL: remove trailing slashes
-export const API_BASE_URL = RAW_API_URL.replace(/\/+$/, '');
+// Normalize URL: ensure /api prefix is present exactly once without duplication
+export const API_BASE_URL = RAW_API_URL.endsWith('/api')
+  ? RAW_API_URL
+  : `${RAW_API_URL}/api`;
 
 /**
  * Generic fetch wrapper with timeout, JSON parsing, and unified error handling

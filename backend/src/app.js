@@ -14,6 +14,17 @@ const rawOrigins = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'http:
 const allowedOrigins = rawOrigins.split(',').map((origin) => origin.trim());
 const isDev = process.env.NODE_ENV !== 'production';
 
+// Check if origin is a valid Vercel deployment (production or preview domain)
+const isVercelOrigin = (origin) => {
+  try {
+    const { hostname, protocol } = new URL(origin);
+    return (protocol === 'https:' || protocol === 'http:') &&
+           (hostname.endsWith('.vercel.app') || hostname === 'vercel.app');
+  } catch {
+    return false;
+  }
+};
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -24,6 +35,11 @@ app.use(
 
       // Allow if origin is explicitly in allowedOrigins list or wildcard
       if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Allow any Vercel production or preview deployment URL
+      if (isVercelOrigin(origin)) {
         return callback(null, true);
       }
 
@@ -73,8 +89,9 @@ app.get('/', (req, res) => {
 app.use('/api', healthRoutes);
 app.use('/', healthRoutes);
 
-// Student resource routes
+// Student resource routes mounted at canonical /api/students and /students alias
 app.use('/api/students', studentRoutes);
+app.use('/students', studentRoutes);
 
 // ==========================================
 // Error Handling
