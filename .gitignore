@@ -11,11 +11,14 @@ backend/.env
 frontend/.env
 frontend/.env.local
 backend/.env.test
+mcp-server/.env
+mcp-server/.env*.local
 
 # Keep example files tracked
 !.env.example
 !backend/.env.example
 !frontend/.env.example
+!mcp-server/.env.example
 
 # Build outputs
 dist/

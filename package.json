@@ -8,7 +8,12 @@
     "backend:start": "npm --prefix backend start",
     "backend:test": "npm --prefix backend test",
     "frontend:dev": "npm --prefix frontend run dev",
-    "frontend:build": "npm --prefix frontend run build"
+    "frontend:build": "npm --prefix frontend run build",
+    "mcp:install": "npm --prefix mcp-server install",
+    "mcp:build": "npm --prefix mcp-server run build",
+    "mcp:start": "npm --prefix mcp-server start",
+    "mcp:dev": "npm --prefix mcp-server run dev",
+    "mcp:test": "npm --prefix mcp-server run test:tools"
   },
   "keywords": [
     "three-tier-architecture",

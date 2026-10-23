@@ -5,44 +5,44 @@
 
 :root {
   /* Brand & Accents */
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-light: rgba(99, 102, 241, 0.15);
-  --primary-glow: rgba(99, 102, 241, 0.35);
+  --primary: #c4623a;
+  --primary-hover: #a94f2c;
+  --primary-light: rgba(196, 98, 58, 0.15);
+  --primary-glow: rgba(196, 98, 58, 0.35);
 
-  --secondary: #06b6d4;
-  --secondary-hover: #0891b2;
-  --secondary-light: rgba(6, 182, 212, 0.15);
+  --secondary: #5c7a4a;
+  --secondary-hover: #48603a;
+  --secondary-light: rgba(92, 122, 74, 0.15);
 
   /* Status Colors */
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.12);
-  --success-border: rgba(16, 185, 129, 0.3);
+  --success: #5c7a4a;
+  --success-bg: rgba(92, 122, 74, 0.12);
+  --success-border: rgba(92, 122, 74, 0.3);
 
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.12);
-  --warning-border: rgba(245, 158, 11, 0.3);
+  --warning: #b8862f;
+  --warning-bg: rgba(184, 134, 47, 0.12);
+  --warning-border: rgba(184, 134, 47, 0.3);
 
-  --danger: #f43f5e;
-  --danger-hover: #e11d48;
-  --danger-bg: rgba(244, 63, 94, 0.12);
-  --danger-border: rgba(244, 63, 94, 0.3);
+  --danger: #b0413a;
+  --danger-hover: #8f332d;
+  --danger-bg: rgba(176, 65, 58, 0.12);
+  --danger-border: rgba(176, 65, 58, 0.3);
 
   /* Dark Theme Palette (Default) */
-  --bg-main: #0b0f19;
-  --bg-surface: #111827;
-  --bg-surface-elevated: #1f2937;
-  --bg-surface-glass: rgba(17, 24, 39, 0.75);
-  --bg-card: rgba(31, 41, 55, 0.65);
-  --bg-card-hover: rgba(31, 41, 55, 0.9);
+  --bg-main: #17130f;
+  --bg-surface: #1f1a15;
+  --bg-surface-elevated: #2a241d;
+  --bg-surface-glass: rgba(31, 26, 21, 0.75);
+  --bg-card: rgba(42, 36, 29, 0.65);
+  --bg-card-hover: rgba(42, 36, 29, 0.9);
   
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-medium: rgba(255, 255, 255, 0.14);
-  --border-focus: #6366f1;
+  --border-subtle: rgba(255, 245, 230, 0.08);
+  --border-medium: rgba(255, 245, 230, 0.14);
+  --border-focus: #c4623a;
 
-  --text-main: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-main: #f5efe6;
+  --text-secondary: #b3a897;
+  --text-muted: #7d7364;
 
   /* Typography */
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -76,9 +76,9 @@ html, body {
   min-height: 100vh;
   background-color: var(--bg-main);
   background-image: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.1) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(196, 98, 58, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(92, 122, 74, 0.10) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(184, 134, 47, 0.08) 0px, transparent 50%);
   background-attachment: fixed;
   color: var(--text-main);
   font-family: var(--font-body);
@@ -120,11 +120,11 @@ a:hover {
   background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 245, 230, 0.18);
   border-radius: var(--radius-pill);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 245, 230, 0.3);
 }
 
 /* Layout Container */
@@ -167,7 +167,7 @@ a:hover {
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: linear-gradient(135deg, var(--primary), var(--warning));
   border-radius: var(--radius-md);
   color: white;
   box-shadow: 0 4px 12px var(--primary-glow);
@@ -177,7 +177,7 @@ a:hover {
   font-size: 1.35rem;
   font-weight: 800;
   line-height: 1.2;
-  background: linear-gradient(to right, #ffffff, #d1d5db);
+  background: linear-gradient(to right, #f5efe6, #d6c9b6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -270,13 +270,13 @@ a:hover {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), #4f46e5);
+  background: linear-gradient(135deg, var(--primary), #a94f2c);
   color: white;
   box-shadow: 0 2px 10px var(--primary-glow);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--primary-hover), #4338ca);
+  background: linear-gradient(135deg, var(--primary-hover), #8f3f22);
   transform: translateY(-1px);
   box-shadow: 0 4px 14px var(--primary-glow);
 }
@@ -288,20 +288,20 @@ a:hover {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 245, 230, 0.1);
+  border-color: rgba(255, 245, 230, 0.25);
   color: white;
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, var(--danger), #be123c);
+  background: linear-gradient(135deg, var(--danger), #8f332d);
   color: white;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: linear-gradient(135deg, #e11d48, #9f1239);
+  background: linear-gradient(135deg, #8f332d, #6f2621);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
+  box-shadow: 0 4px 12px rgba(176, 65, 58, 0.4);
 }
 
 .btn-ghost {
@@ -310,7 +310,7 @@ a:hover {
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 245, 230, 0.08);
   color: var(--text-main);
 }
 
@@ -323,12 +323,12 @@ a:hover {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-subtle);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 245, 230, 0.04);
   color: var(--text-secondary);
 }
 
 .btn-icon:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 245, 230, 0.1);
   color: white;
   border-color: var(--border-medium);
 }
@@ -384,23 +384,23 @@ a:hover {
 }
 
 .summary-icon-box.purple {
-  background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
+  background: rgba(196, 98, 58, 0.15);
+  color: #e08a63;
 }
 
 .summary-icon-box.cyan {
-  background: rgba(6, 182, 212, 0.15);
-  color: #22d3ee;
+  background: rgba(92, 122, 74, 0.15);
+  color: #8fb07a;
 }
 
 .summary-icon-box.emerald {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  background: rgba(92, 122, 74, 0.15);
+  color: #8fb07a;
 }
 
 .summary-icon-box.amber {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
+  background: rgba(184, 134, 47, 0.15);
+  color: #d9a94e;
 }
 
 .summary-info {
@@ -501,7 +501,7 @@ a:hover {
 .form-control {
   width: 100%;
   padding: 0.65rem 0.85rem;
-  background: rgba(17, 24, 39, 0.8);
+  background: rgba(31, 26, 21, 0.8);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   color: var(--text-main);
@@ -519,7 +519,7 @@ a:hover {
   outline: none;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px var(--primary-light);
-  background: rgba(17, 24, 39, 1);
+  background: rgba(31, 26, 21, 1);
 }
 
 .form-control::placeholder {
@@ -528,7 +528,7 @@ a:hover {
 
 select.form-control {
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b3a897' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 1em;
@@ -537,8 +537,8 @@ select.form-control {
 }
 
 select.form-control option {
-  background: #1f2937;
-  color: #f9fafb;
+  background: #2a241d;
+  color: #f5efe6;
 }
 
 /* ========================================================
@@ -575,7 +575,7 @@ select.form-control option {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  background: rgba(17, 24, 39, 0.7);
+  background: rgba(31, 26, 21, 0.7);
   border-bottom: 1px solid var(--border-subtle);
   white-space: nowrap;
 }
@@ -612,16 +612,16 @@ select.form-control option {
 }
 
 .student-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 245, 230, 0.03);
 }
 
 /* Student Cells Styling */
 .student-id-badge {
   display: inline-block;
   padding: 0.25rem 0.5rem;
-  background: rgba(99, 102, 241, 0.12);
-  color: #a5b4fc;
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  background: rgba(196, 98, 58, 0.12);
+  color: #e08a63;
+  border: 1px solid rgba(196, 98, 58, 0.25);
   border-radius: var(--radius-sm);
   font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 600;
@@ -638,7 +638,7 @@ select.form-control option {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4f46e5, #06b6d4);
+  background: linear-gradient(135deg, #a94f2c, #b8862f);
   color: white;
   display: flex;
   align-items: center;
@@ -671,9 +671,9 @@ select.form-control option {
   border-radius: var(--radius-pill);
   font-size: 0.78rem;
   font-weight: 600;
-  background: rgba(6, 182, 212, 0.12);
-  color: #67e8f9;
-  border: 1px solid rgba(6, 182, 212, 0.25);
+  background: rgba(92, 122, 74, 0.12);
+  color: #a3c48c;
+  border: 1px solid rgba(92, 122, 74, 0.25);
   white-space: nowrap;
 }
 
@@ -683,9 +683,9 @@ select.form-control option {
   border-radius: var(--radius-sm);
   font-size: 0.8rem;
   font-weight: 600;
-  background: rgba(16, 185, 129, 0.12);
-  color: #6ee7b7;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgba(184, 134, 47, 0.12);
+  color: #d9a94e;
+  border: 1px solid rgba(184, 134, 47, 0.25);
 }
 
 .actions-cell {
@@ -700,7 +700,7 @@ select.form-control option {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  background: rgba(17, 24, 39, 0.6);
+  background: rgba(31, 26, 21, 0.6);
   border-top: 1px solid var(--border-subtle);
   flex-wrap: wrap;
   gap: 1rem;
@@ -740,7 +740,7 @@ select.form-control option {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 245, 230, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -771,9 +771,9 @@ select.form-control option {
   border-radius: var(--radius-sm);
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.09) 37%,
-    rgba(255, 255, 255, 0.04) 63%
+    rgba(255, 245, 230, 0.04) 25%,
+    rgba(255, 245, 230, 0.09) 37%,
+    rgba(255, 245, 230, 0.04) 63%
   );
   background-size: 400% 100%;
   animation: shimmer 1.6s ease infinite;
@@ -845,7 +845,7 @@ select.form-control option {
 
 .modal-close-btn:hover {
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 245, 230, 0.1);
 }
 
 .modal-body {
@@ -859,7 +859,7 @@ select.form-control option {
   gap: 0.75rem;
   padding: 1.25rem 1.75rem;
   border-top: 1px solid var(--border-subtle);
-  background: rgba(17, 24, 39, 0.5);
+  background: rgba(31, 26, 21, 0.5);
 }
 
 @keyframes fadeIn {
@@ -900,7 +900,7 @@ select.form-control option {
 
 .field-error {
   font-size: 0.8rem;
-  color: #fb7185;
+  color: #d97a72;
   margin-top: 0.35rem;
   display: flex;
   align-items: center;
@@ -960,11 +960,11 @@ select.form-control option {
 .confirm-target-info {
   margin-top: 0.85rem;
   padding: 0.75rem 1rem;
-  background: rgba(244, 63, 94, 0.08);
+  background: rgba(176, 65, 58, 0.08);
   border: 1px solid var(--danger-border);
   border-radius: var(--radius-md);
   font-size: 0.85rem;
-  color: #fda4af;
+  color: #e0a39d;
 }
 
 /* ========================================================

@@ -60,16 +60,24 @@ cloudp1/
 │   └── tests/
 │       └── health.test.js        # Automated tests (URI validation, 200 health check, 404 handler)
 │
-└── frontend/                     # Tier 1: Presentation Tier
-    ├── .env.example              # Frontend environment variables template
-    ├── .gitignore                # Frontend-specific ignore rules
-    ├── index.html                # Vite HTML entrypoint
-    ├── package.json              # Frontend dependencies and scripts
-    ├── vite.config.js            # Vite configuration
-    └── src/
-        ├── App.jsx               # Root React component
-        ├── main.jsx              # React DOM mounting
-        └── index.css             # Base styles
+├── frontend/                     # Tier 1: Presentation Tier
+│   ├── .env.example              # Frontend environment variables template
+│   ├── .gitignore                # Frontend-specific ignore rules
+│   ├── index.html                # Vite HTML entrypoint
+│   ├── package.json              # Frontend dependencies and scripts
+│   ├── vite.config.js            # Vite configuration
+│   └── src/
+│       ├── App.jsx               # Root React component
+│       ├── main.jsx              # React DOM mounting
+│       └── index.css             # Base styles
+│
+└── mcp-server/                   # Local Model Context Protocol (MCP) Server for Claude Desktop
+    ├── package.json              # MCP dependencies (@modelcontextprotocol/sdk, zod, mongoose)
+    ├── tsconfig.json             # TypeScript configuration
+    ├── claude_desktop_config.json# Claude Desktop Windows config template
+    ├── .env.example              # MCP environment template
+    ├── src/                      # Source code (tools, schemas, db connection)
+    └── dist/                     # Compiled production bundle
 ```
 
 ---
