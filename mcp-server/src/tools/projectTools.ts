@@ -1,9 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { logger } from '../utils/logger.js';
+
+const execAsync = promisify(exec);
 
 // Resolve the root directory of the entire cloudp1 repository (one level above mcp-server)
 const __filename = fileURLToPath(import.meta.url);
@@ -303,5 +307,108 @@ export function registerProjectTools(server: McpServer): void {
     }
   );
 
-  logger.info('All 4 Full-Stack Project & Theme MCP tools registered successfully.');
+  // Tool 5: git_status
+  server.tool(
+    'git_status',
+    'Check git status of the project at D:\\cloudp1 to see which files were modified, created, or staged.',
+    {},
+    async () => {
+      logger.info('Invoked tool: git_status');
+      try {
+        const { stdout } = await execAsync('git status --short', { cwd: PROJECT_ROOT });
+        const statusText = stdout.trim() ? stdout : 'Working tree clean. No uncommitted changes.';
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: `### Git Status (D:\\cloudp1)\n\`\`\`text\n${statusText}\n\`\`\``,
+            },
+          ],
+        };
+      } catch (err: any) {
+        return {
+          isError: true,
+          content: [{ type: 'text' as const, text: `Failed to get git status: ${err.message}` }],
+        };
+      }
+    }
+  );
+
+  // Tool 6: git_commit_and_push
+  server.tool(
+    'git_commit_and_push',
+    'Stage modified code files, commit with a descriptive message, and push to GitHub (origin main). This automatically triggers Vercel frontend and Render backend deployments.',
+    {
+      commitMessage: z
+        .string()
+        .min(3)
+        .describe('Descriptive commit message (e.g. "feat: add semester filter to student dashboard")'),
+      filesToStage: z
+        .array(z.string())
+        .optional()
+        .describe('Optional list of specific files to stage. If omitted, stages all tracked and modified files safely.'),
+    },
+    async (args) => {
+      logger.info(`Invoked tool: git_commit_and_push with message: "${args.commitMessage}"`);
+      try {
+        // Stage files
+        let addCmd = 'git add -u';
+        if (args.filesToStage && args.filesToStage.length > 0) {
+          addCmd = `git add ${args.filesToStage.map((f) => `"${f}"`).join(' ')}`;
+        }
+        await execAsync(addCmd, { cwd: PROJECT_ROOT });
+
+        // Check if there are changes to commit
+        const { stdout: diffOut } = await execAsync('git diff --cached --name-only', { cwd: PROJECT_ROOT });
+        if (!diffOut.trim()) {
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: 'ℹ️ No staged changes detected to commit. Working tree is already up to date.',
+              },
+            ],
+          };
+        }
+
+        // Commit
+        const cleanMsg = args.commitMessage.replace(/"/g, '\\"');
+        const { stdout: commitOut } = await execAsync(`git commit -m "${cleanMsg}"`, { cwd: PROJECT_ROOT });
+
+        // Push
+        const { stdout: pushOut, stderr: pushErr } = await execAsync('git push origin main', { cwd: PROJECT_ROOT });
+
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: [
+                '✅ **Changes Committed & Pushed to GitHub Successfully!**',
+                `- **Commit:** \`${cleanMsg}\``,
+                `- **Remote Branch:** \`origin/main\``,
+                `- **Staged Files:**\n\`\`\`\n${diffOut.trim()}\n\`\`\``,
+                '🚀 **Multi-Platform Deployment Triggered:**',
+                '- **GitHub**: Source code updated with verified commit.',
+                '- **Vercel**: Frontend deployment automatically triggered.',
+                '- **Render**: Backend deployment automatically triggered.',
+              ].join('\n'),
+            },
+          ],
+        };
+      } catch (err: any) {
+        logger.error('Error during git_commit_and_push:', err);
+        return {
+          isError: true,
+          content: [
+            {
+              type: 'text' as const,
+              text: `Failed to commit and push: ${err.message}\n${err.stderr || ''}`,
+            },
+          ],
+        };
+      }
+    }
+  );
+
+  logger.info('All 6 Full-Stack Project, Git & Theme MCP tools registered successfully.');
 }
