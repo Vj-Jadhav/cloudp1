@@ -410,5 +410,140 @@ export function registerProjectTools(server: McpServer): void {
     }
   );
 
-  logger.info('All 6 Full-Stack Project, Git & Theme MCP tools registered successfully.');
+  // Tool 7: scale_docker_containers
+  server.tool(
+    'scale_docker_containers',
+    'Scale backend Docker containers on Render via Render Blueprint (render.yaml). Configure the target number of container replicas, service plan, and autoscaling thresholds, and optionally deploy directly to Render via GitHub push.',
+    {
+      numInstances: z
+        .number()
+        .int()
+        .min(1)
+        .max(10)
+        .describe('Target number of Docker container instances to run on Render (e.g. 1, 2, 3, 5)'),
+      plan: z
+        .enum(['free', 'starter', 'standard', 'pro'])
+        .optional()
+        .describe('Render service plan tier. Note: Free tier allows 1 instance. Multi-container scaling requires Starter ($7/mo/instance) or higher.'),
+      autoScale: z
+        .object({
+          minInstances: z.number().int().min(1).default(1),
+          maxInstances: z.number().int().min(2).max(10),
+          targetCPUPercent: z.number().int().min(10).max(95).default(75),
+          targetMemoryPercent: z.number().int().min(10).max(95).default(75),
+        })
+        .optional()
+        .describe('Optional horizontal autoscaling rules (requires Starter plan or higher)'),
+      deployNow: z
+        .boolean()
+        .default(true)
+        .describe('Automatically commit and push the updated render.yaml to GitHub so Render applies the Blueprint and provisions containers immediately (default: true)'),
+    },
+    async (args) => {
+      logger.info('Invoked tool: scale_docker_containers', args);
+      const renderYamlPath = path.join(PROJECT_ROOT, 'render.yaml');
+
+      if (!fs.existsSync(renderYamlPath)) {
+        return {
+          isError: true,
+          content: [{ type: 'text' as const, text: `render.yaml not found at ${renderYamlPath}` }],
+        };
+      }
+
+      // Determine effective plan
+      let effectivePlan = args.plan;
+      if (!effectivePlan) {
+        if (args.numInstances > 1 || args.autoScale) {
+          effectivePlan = 'starter';
+        } else {
+          effectivePlan = 'free';
+        }
+      }
+
+      // Construct scaling YAML section
+      let scalingSection = `    numInstances: ${args.numInstances}\n`;
+      if (args.autoScale) {
+        scalingSection += [
+          '    scaling:',
+          `      minInstances: ${args.autoScale.minInstances}`,
+          `      maxInstances: ${args.autoScale.maxInstances}`,
+          `      targetCPUPercent: ${args.autoScale.targetCPUPercent}`,
+          `      targetMemoryPercent: ${args.autoScale.targetMemoryPercent}\n`,
+        ].join('\n');
+      }
+
+      // Construct fresh render.yaml
+      const newYamlContent = [
+        '# ========================================================',
+        '# Render Blueprint (Infrastructure-as-Code)',
+        '# Student Information Management System - Backend Tier',
+        '# Deployed as a Docker container (see backend/Dockerfile)',
+        '# ========================================================',
+        'services:',
+        '  - type: web',
+        '    name: student-system-backend',
+        '    runtime: docker',
+        '    rootDir: backend',
+        '    dockerfilePath: ./Dockerfile',
+        '    dockerContext: .',
+        `    plan: ${effectivePlan}`,
+        scalingSection.trimEnd(),
+        '    healthCheckPath: /api/health',
+        '    autoDeploy: true',
+        '    envVars:',
+        '      - key: NODE_ENV',
+        '        value: production',
+        '      - key: PORT',
+        '        value: 5000',
+        '      - key: DB_NAME',
+        '        value: student_db',
+        '      - key: FRONTEND_URL',
+        '        sync: false',
+        '      - key: MONGODB_URI',
+        '        sync: false',
+        '',
+      ].join('\n');
+
+      fs.writeFileSync(renderYamlPath, newYamlContent, 'utf8');
+      logger.info('Updated render.yaml with new scaling parameters.');
+
+      let pushStatus = 'Not pushed (deployNow set to false).';
+      if (args.deployNow) {
+        try {
+          await execAsync('git add render.yaml', { cwd: PROJECT_ROOT });
+          const commitMsg = `chore(infra): scale backend docker containers to ${args.numInstances} instance(s) (${effectivePlan} plan)`;
+          await execAsync(`git commit -m "${commitMsg}"`, { cwd: PROJECT_ROOT });
+          await execAsync('git push origin main', { cwd: PROJECT_ROOT });
+          pushStatus = `Successfully pushed commit "${commitMsg}" to GitHub origin/main. Render Blueprint sync triggered!`;
+        } catch (gitErr: any) {
+          pushStatus = `render.yaml updated locally, but git push encountered: ${gitErr.message}`;
+        }
+      }
+
+      const costNote =
+        effectivePlan === 'free'
+          ? 'Free tier (1 instance, spins down after 15 min idle).'
+          : `${effectivePlan.toUpperCase()} tier (~$7/month per active instance, always-on with zero cold start).`;
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: [
+              '🐳 **Docker Container Scaling Configured on Render!**',
+              `- **Target Instances:** ${args.numInstances}`,
+              `- **Configured Plan:** \`${effectivePlan}\``,
+              `- **Plan Details:** ${costNote}`,
+              args.autoScale
+                ? `- **Autoscaling Rules:** Min ${args.autoScale.minInstances}, Max ${args.autoScale.maxInstances} (Target CPU: ${args.autoScale.targetCPUPercent}%, Target RAM: ${args.autoScale.targetMemoryPercent}%)`
+                : '- **Autoscaling:** Manual replica count',
+              `- **Deployment Status:** ${pushStatus}`,
+            ].join('\n'),
+          },
+        ],
+      };
+    }
+  );
+
+  logger.info('All 7 Full-Stack Project, Git, Theme & Docker Scaling MCP tools registered successfully.');
 }
