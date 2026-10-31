@@ -5,8 +5,8 @@
 
 :root {
   /* Brand & Accents (Midnight Blue Edition) */
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
+  --primary: #10b981;
+  --primary-hover: #059669;
   --primary-light: rgba(59, 130, 246, 0.15);
   --primary-glow: rgba(59, 130, 246, 0.35);
 
@@ -29,16 +29,16 @@
   --danger-border: rgba(239, 68, 68, 0.3);
 
   /* Dark Theme Palette (Midnight Blue Glassmorphism) */
-  --bg-main: #070b14;
-  --bg-surface: #0c1222;
-  --bg-surface-elevated: #131d36;
+  --bg-main: #061a14;
+  --bg-surface: #0e2e24;
+  --bg-surface-elevated: #0e2e24;
   --bg-surface-glass: rgba(12, 18, 34, 0.85);
   --bg-card: rgba(19, 29, 54, 0.7);
   --bg-card-hover: rgba(25, 38, 70, 0.95);
   
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-medium: rgba(255, 255, 255, 0.15);
-  --border-focus: #3b82f6;
+  --border-focus: #10b981;
 
   --text-main: #f8fafc;
   --text-secondary: #94a3b8;

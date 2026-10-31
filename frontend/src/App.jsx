@@ -83,9 +83,9 @@ export function App() {
     }
   }, []);
 
-  // Fetch Students
-  const loadStudents = useCallback(async () => {
-    setLoading(true);
+  // Fetch Students (supports silent real-time background sync without table flicker)
+  const loadStudents = useCallback(async (isSilent = false) => {
+    if (!isSilent) setLoading(true);
     try {
       const response = await studentApi.getStudents({
         search: debouncedSearch,
@@ -112,37 +112,40 @@ export function App() {
         setTotalCount(response.pagination?.total ?? response.count ?? 0);
       }
     } catch (err) {
-      console.error('Failed to load students:', err);
-      addToast(
-        'error',
-        err.message || 'Failed to communicate with the backend API.',
-        'Network Error'
-      );
+      if (!isSilent) {
+        console.error('Failed to load students:', err);
+        addToast(
+          'error',
+          err.message || 'Failed to communicate with the backend API.',
+          'Network Error'
+        );
+      }
     } finally {
-      setLoading(false);
+      if (!isSilent) setLoading(false);
     }
   }, [debouncedSearch, department, semester, page, limit, sortBy, order, addToast]);
 
   // Manual Refresh Handler
   const handleManualRefresh = useCallback(async () => {
-    await Promise.all([loadStudents(), checkServerHealth()]);
+    await Promise.all([loadStudents(false), checkServerHealth()]);
     addToast('info', 'Student records updated from MongoDB Atlas.', 'Refreshed');
   }, [loadStudents, checkServerHealth, addToast]);
 
-  // Initial load and auto-sync on window focus & periodic interval
+  // Initial load and fast 3-second real-time auto-sync (instant Claude MCP updates)
   useEffect(() => {
-    loadStudents();
+    loadStudents(false);
     checkServerHealth();
 
     const onFocus = () => {
-      loadStudents();
+      loadStudents(true);
       checkServerHealth();
     };
     window.addEventListener('focus', onFocus);
+    // Real-time polling every 3 seconds so Claude MCP edits reflect instantly
     const interval = setInterval(() => {
-      loadStudents();
+      loadStudents(true);
       checkServerHealth();
-    }, 20000);
+    }, 3000);
 
     return () => {
       window.removeEventListener('focus', onFocus);

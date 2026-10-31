@@ -1,15 +1,16 @@
 # ========================================================
 # Render Blueprint (Infrastructure-as-Code)
 # Student Information Management System - Backend Tier
+# Deployed as a Docker container (see backend/Dockerfile)
 # ========================================================
 services:
   - type: web
     name: student-system-backend
-    runtime: node
+    runtime: docker
     rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     plan: free
-    buildCommand: npm install
-    startCommand: node src/server.js
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
