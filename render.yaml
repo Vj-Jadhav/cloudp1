@@ -10,8 +10,8 @@ services:
     rootDir: backend
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    plan: starter
-    numInstances: 2
+    plan: free
+    numInstances: 1
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
