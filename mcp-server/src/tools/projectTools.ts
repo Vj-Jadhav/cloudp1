@@ -507,10 +507,23 @@ export function registerProjectTools(server: McpServer): void {
       fs.writeFileSync(renderYamlPath, newYamlContent, 'utf8');
       logger.info('Updated render.yaml with new scaling parameters.');
 
+      // Also update backend containers configuration so the dashboard immediately shows replica count
+      const containersConfigPath = path.join(PROJECT_ROOT, 'backend/src/config/containers.json');
+      const services = Array.from({ length: args.numInstances }, (_, i) => (i === 0 ? 'cloudp' : `cloudp-replica-${i + 1}`));
+      const containersData = {
+        count: args.numInstances,
+        runtime: 'Docker',
+        provider: 'Render',
+        status: 'active',
+        services,
+        lastUpdated: new Date().toISOString(),
+      };
+      fs.writeFileSync(containersConfigPath, JSON.stringify(containersData, null, 2), 'utf8');
+
       let pushStatus = 'Not pushed (deployNow set to false).';
       if (args.deployNow) {
         try {
-          await execAsync('git add render.yaml', { cwd: PROJECT_ROOT });
+          await execAsync('git add render.yaml backend/src/config/containers.json', { cwd: PROJECT_ROOT });
           const commitMsg = `chore(infra): scale backend docker containers to ${args.numInstances} instance(s) (${effectivePlan} plan)`;
           await execAsync(`git commit -m "${commitMsg}"`, { cwd: PROJECT_ROOT });
           await execAsync('git push origin main', { cwd: PROJECT_ROOT });
@@ -630,10 +643,22 @@ export function registerProjectTools(server: McpServer): void {
       fs.writeFileSync(renderYamlPath, duplicateYamlContent, 'utf8');
       logger.info(`Updated render.yaml with 2 container copies: cloudp and ${args.copyName}`);
 
+      // Also update backend containers configuration so the dashboard immediately shows 2 copies
+      const containersConfigPath = path.join(PROJECT_ROOT, 'backend/src/config/containers.json');
+      const containersData = {
+        count: 2,
+        runtime: 'Docker',
+        provider: 'Render',
+        status: 'active',
+        services: ['cloudp', args.copyName],
+        lastUpdated: new Date().toISOString(),
+      };
+      fs.writeFileSync(containersConfigPath, JSON.stringify(containersData, null, 2), 'utf8');
+
       let pushStatus = 'Not pushed (deployNow set to false).';
       if (args.deployNow) {
         try {
-          await execAsync('git add render.yaml', { cwd: PROJECT_ROOT });
+          await execAsync('git add render.yaml backend/src/config/containers.json', { cwd: PROJECT_ROOT });
           const commitMsg = `chore(infra): add second container copy (${args.copyName}) to render blueprint`;
           await execAsync(`git commit -m "${commitMsg}"`, { cwd: PROJECT_ROOT });
           await execAsync('git push origin main', { cwd: PROJECT_ROOT });

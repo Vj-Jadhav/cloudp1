@@ -293,6 +293,7 @@ export function App() {
       <Header
         onAddClick={handleOpenAdd}
         healthStatus={healthStatus}
+        healthInfo={healthInfo}
         onRefresh={handleManualRefresh}
         loading={loading}
       />

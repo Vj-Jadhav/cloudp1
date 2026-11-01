@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Building2, BookOpen, Database } from 'lucide-react';
+import { Users, Building2, BookOpen, Database, Layers } from 'lucide-react';
 
 export const SummaryCards = ({ students = [], totalCount = 0, healthInfo = null }) => {
   // Compute metrics
@@ -14,6 +14,15 @@ export const SummaryCards = ({ students = [], totalCount = 0, healthInfo = null 
 
   const dbHost = healthInfo?.database?.host || 'MongoDB Atlas';
   const isDbConnected = healthInfo?.database?.status === 'connected';
+
+  // Compute Docker container metrics
+  const containerCount = healthInfo?.containers?.count ?? 2;
+  const containerServices = healthInfo?.containers?.services || ['cloudp', 'cloudp-copy'];
+  const containerLabel = containerCount === 1 ? '1 Copy' : `${containerCount} Copies`;
+  const containerDesc =
+    containerServices.length > 1
+      ? `${containerServices.join(' + ')} (Render)`
+      : 'cloudp (Render Docker)';
 
   return (
     <section className="summary-grid" aria-label="Student management overview statistics">
@@ -65,6 +74,22 @@ export const SummaryCards = ({ students = [], totalCount = 0, healthInfo = null 
           </span>
           <span className="summary-desc" title={dbHost}>
             {isDbConnected ? 'Replica set healthy' : 'Checking status...'}
+          </span>
+        </div>
+      </div>
+
+      {/* Docker Containers Card */}
+      <div className="summary-card">
+        <div className="summary-icon-box blue" aria-hidden="true">
+          <Layers size={24} />
+        </div>
+        <div className="summary-info">
+          <span className="summary-label">Docker Containers</span>
+          <span className="summary-value" style={{ fontSize: '1.25rem' }}>
+            {containerLabel}
+          </span>
+          <span className="summary-desc" title={containerServices.join(', ')}>
+            {containerDesc}
           </span>
         </div>
       </div>

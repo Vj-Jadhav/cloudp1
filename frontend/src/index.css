@@ -403,6 +403,11 @@ a:hover {
   color: #d9a94e;
 }
 
+.summary-icon-box.blue {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
 .summary-info {
   display: flex;
   flex-direction: column;

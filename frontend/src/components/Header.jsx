@@ -1,7 +1,7 @@
 import React from 'react';
-import { GraduationCap, Plus, Database, RefreshCw } from 'lucide-react';
+import { GraduationCap, Plus, Database, RefreshCw, Layers } from 'lucide-react';
 
-export const Header = ({ onAddClick, healthStatus, onRefresh, loading }) => {
+export const Header = ({ onAddClick, healthStatus, healthInfo, onRefresh, loading }) => {
   const getStatusClass = () => {
     if (healthStatus === 'UP') return 'online';
     if (healthStatus === 'DEGRADED' || healthStatus === 'DOWN') return 'offline';
@@ -14,6 +14,8 @@ export const Header = ({ onAddClick, healthStatus, onRefresh, loading }) => {
     if (healthStatus === 'DOWN') return 'API Offline';
     return 'Checking API...';
   };
+
+  const containerCount = healthInfo?.containers?.count ?? 2;
 
   return (
     <header className="header" role="banner">
@@ -28,6 +30,10 @@ export const Header = ({ onAddClick, healthStatus, onRefresh, loading }) => {
             <span>•</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <Database size={13} /> MongoDB Atlas
+            </span>
+            <span>•</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Layers size={13} /> Docker ({containerCount} Copies)
             </span>
           </div>
         </div>

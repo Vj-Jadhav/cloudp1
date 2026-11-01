@@ -1,0 +1,11 @@
+{
+  "count": 2,
+  "runtime": "Docker",
+  "provider": "Render",
+  "status": "active",
+  "services": [
+    "cloudp",
+    "cloudp-copy"
+  ],
+  "lastUpdated": "2026-11-01T17:30:00.000Z"
+}

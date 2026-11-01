@@ -1,4 +1,5 @@
 import { getDatabaseStatus } from '../config/db.js';
+import { getContainerStatus } from '../config/containerStatus.js';
 
 /**
  * Controller to handle API health check requests.
@@ -6,6 +7,7 @@ import { getDatabaseStatus } from '../config/db.js';
  */
 export const getHealth = (req, res) => {
   const dbStatus = getDatabaseStatus();
+  const containerStatus = getContainerStatus();
   const isHealthy = dbStatus.status === 'connected';
 
   const healthData = {
@@ -20,6 +22,7 @@ export const getHealth = (req, res) => {
       host: dbStatus.host || 'N/A',
       name: dbStatus.name || 'N/A',
     },
+    containers: containerStatus,
   };
 
   // Return 200 if database is connected, or 503 Service Unavailable if degraded
