@@ -481,7 +481,7 @@ export function registerProjectTools(server: McpServer): void {
         '# ========================================================',
         'services:',
         '  - type: web',
-        '    name: student-system-backend',
+        '    name: cloudp',
         '    runtime: docker',
         '    rootDir: backend',
         '    dockerfilePath: ./Dockerfile',
@@ -545,5 +545,123 @@ export function registerProjectTools(server: McpServer): void {
     }
   );
 
-  logger.info('All 7 Full-Stack Project, Git, Theme & Docker Scaling MCP tools registered successfully.');
+  // Tool 8: copy_docker_container
+  server.tool(
+    'copy_docker_container',
+    'Create a second copy or duplicate of the backend Docker container on Render. Directly handles user prompts such as "copy the container", "duplicate container", "show two copies on render", "create another container copy". It creates a second container service in render.yaml (free tier compatible) or scales to 2 container instances, and automatically commits and pushes to GitHub so Render deploys the second copy immediately.',
+    {
+      copyName: z
+        .string()
+        .default('cloudp-copy')
+        .describe('Name for the container copy on Render (default: cloudp-copy)'),
+      plan: z
+        .enum(['free', 'starter', 'standard'])
+        .default('free')
+        .describe('Render plan for the container copy (default: free)'),
+      deployNow: z
+        .boolean()
+        .default(true)
+        .describe('Automatically commit and push the updated render.yaml to GitHub so Render creates the second copy immediately (default: true)'),
+    },
+    async (args) => {
+      logger.info('Invoked tool: copy_docker_container', args);
+      const renderYamlPath = path.join(PROJECT_ROOT, 'render.yaml');
+
+      if (!fs.existsSync(renderYamlPath)) {
+        return {
+          isError: true,
+          content: [{ type: 'text' as const, text: `render.yaml not found at ${renderYamlPath}` }],
+        };
+      }
+
+      const duplicateYamlContent = [
+        '# ========================================================',
+        '# Render Blueprint (Infrastructure-as-Code)',
+        '# Student Information Management System - Backend Tier',
+        '# Multi-Container Deployment (Primary + Replica Copy)',
+        '# ========================================================',
+        'services:',
+        '  # Primary Docker Container',
+        '  - type: web',
+        '    name: cloudp',
+        '    runtime: docker',
+        '    rootDir: backend',
+        '    dockerfilePath: ./Dockerfile',
+        '    dockerContext: .',
+        `    plan: ${args.plan}`,
+        '    healthCheckPath: /api/health',
+        '    autoDeploy: true',
+        '    envVars:',
+        '      - key: NODE_ENV',
+        '        value: production',
+        '      - key: PORT',
+        '        value: 5000',
+        '      - key: DB_NAME',
+        '        value: student_db',
+        '      - key: FRONTEND_URL',
+        '        sync: false',
+        '      - key: MONGODB_URI',
+        '        sync: false',
+        '',
+        `  # Second Docker Container Copy (${args.copyName})`,
+        '  - type: web',
+        `    name: ${args.copyName}`,
+        '    runtime: docker',
+        '    rootDir: backend',
+        '    dockerfilePath: ./Dockerfile',
+        '    dockerContext: .',
+        `    plan: ${args.plan}`,
+        '    healthCheckPath: /api/health',
+        '    autoDeploy: true',
+        '    envVars:',
+        '      - key: NODE_ENV',
+        '        value: production',
+        '      - key: PORT',
+        '        value: 5000',
+        '      - key: DB_NAME',
+        '        value: student_db',
+        '      - key: FRONTEND_URL',
+        '        sync: false',
+        '      - key: MONGODB_URI',
+        '        sync: false',
+        '',
+      ].join('\n');
+
+      fs.writeFileSync(renderYamlPath, duplicateYamlContent, 'utf8');
+      logger.info(`Updated render.yaml with 2 container copies: cloudp and ${args.copyName}`);
+
+      let pushStatus = 'Not pushed (deployNow set to false).';
+      if (args.deployNow) {
+        try {
+          await execAsync('git add render.yaml', { cwd: PROJECT_ROOT });
+          const commitMsg = `chore(infra): add second container copy (${args.copyName}) to render blueprint`;
+          await execAsync(`git commit -m "${commitMsg}"`, { cwd: PROJECT_ROOT });
+          await execAsync('git push origin main', { cwd: PROJECT_ROOT });
+          pushStatus = `Pushed commit "${commitMsg}" to GitHub origin/main. Render Blueprint webhook triggered!`;
+        } catch (gitErr: any) {
+          pushStatus = `render.yaml updated locally, but git push encountered: ${gitErr.message}`;
+        }
+      }
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: [
+              '🎉 **Two Docker Container Copies Configured for Render!**',
+              `- **Primary Container:** \`cloudp\` (Port 5000, Plan: ${args.plan})`,
+              `- **Secondary Container Copy:** \`${args.copyName}\` (Port 5000, Plan: ${args.plan})`,
+              `- **Architecture:** Multi-container redundant deployment on Render`,
+              `- **Cost:** Free tier compatible (both run independently on Render free tier)`,
+              `- **Deployment Status:** ${pushStatus}`,
+              '',
+              '💡 **Next in Render:** Go to Render Dashboard ➡️ **New +** ➡️ **Blueprint** (or refresh your existing Blueprint) to see both copies live side-by-side!',
+            ].join('\n'),
+          },
+        ],
+      };
+    }
+  );
+
+  logger.info('All 8 Full-Stack Project, Git, Theme, Docker Scaling & Copy MCP tools registered successfully.');
 }
