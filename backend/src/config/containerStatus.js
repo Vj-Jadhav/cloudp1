@@ -33,3 +33,4 @@ export function getContainerStatus() {
     lastUpdated: new Date().toISOString(),
   };
 }
+
