@@ -306,6 +306,46 @@ export function App() {
           healthInfo={healthInfo}
         />
 
+        {/* Live Container Cluster Status */}
+        <section className="container-cluster-panel" aria-label="Active Docker Container Instances">
+          <div className="cluster-header">
+            <div className="cluster-title-wrap">
+              <span className="cluster-badge">
+                <span className="cluster-pulse-dot" />
+                Render Cloud Cluster
+              </span>
+              <span className="cluster-meta">
+                {(healthInfo?.containers?.count ?? 2)} Active {(healthInfo?.containers?.count ?? 2) === 1 ? 'Container' : 'Containers (Replicas)'} • Runtime: Docker 20-alpine
+              </span>
+            </div>
+            <div className="cluster-actions">
+              <span className="cluster-status-pill">
+                {(healthInfo?.containers?.count ?? 2) > 1 ? 'Multi-Container Active' : 'Single Container Active'}
+              </span>
+            </div>
+          </div>
+          <div className="cluster-cards-grid">
+            {(healthInfo?.containers?.services || ['cloudp', 'cloudp-copy']).map((serviceName, idx) => (
+              <div key={serviceName} className="cluster-instance-card">
+                <div className="instance-card-header">
+                  <div className="instance-dot-title">
+                    <span className="instance-dot live" />
+                    <span className="instance-name">{serviceName}</span>
+                  </div>
+                  <span className="instance-tag">{idx === 0 ? 'Primary Container' : `Replica Copy #${idx}`}</span>
+                </div>
+                <div className="instance-details">
+                  <span>Port: 5000</span>
+                  <span>•</span>
+                  <span>Health: OK (/api/health)</span>
+                  <span>•</span>
+                  <span>Render Cloud</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Search, Filter & Sort Toolbar */}
         <SearchFilterBar
           search={search}

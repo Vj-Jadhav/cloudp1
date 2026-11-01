@@ -2,26 +2,53 @@
 # Render Blueprint (Infrastructure-as-Code)
 # Student Information Management System - Backend Tier
 # Multi-Container Deployment (Primary + Replica Copy)
+# Assigned to "My project" -> "Production"
 # ========================================================
-services:
-  # Primary Docker Container
-  - type: web
-    name: cloudp
-    runtime: docker
-    rootDir: backend
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    plan: free
-    healthCheckPath: /api/health
-    autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 5000
-      - key: DB_NAME
-        value: student_db
-      - key: FRONTEND_URL
-        sync: false
-      - key: MONGODB_URI
-        sync: false
+projects:
+  - name: My project
+    environments:
+      - name: Production
+        services:
+          # Primary Docker Container
+          - type: web
+            name: cloudp
+            runtime: docker
+            rootDir: backend
+            dockerfilePath: ./Dockerfile
+            dockerContext: .
+            plan: free
+            healthCheckPath: /api/health
+            autoDeploy: true
+            envVars:
+              - key: NODE_ENV
+                value: production
+              - key: PORT
+                value: 5000
+              - key: DB_NAME
+                value: student_db
+              - key: FRONTEND_URL
+                sync: false
+              - key: MONGODB_URI
+                sync: false
+
+          # Second Docker Container Copy (cloudp-copy)
+          - type: web
+            name: cloudp-copy
+            runtime: docker
+            rootDir: backend
+            dockerfilePath: ./Dockerfile
+            dockerContext: .
+            plan: free
+            healthCheckPath: /api/health
+            autoDeploy: true
+            envVars:
+              - key: NODE_ENV
+                value: production
+              - key: PORT
+                value: 5000
+              - key: DB_NAME
+                value: student_db
+              - key: FRONTEND_URL
+                sync: false
+              - key: MONGODB_URI
+                sync: false
