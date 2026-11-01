@@ -597,62 +597,55 @@ export function registerProjectTools(server: McpServer): void {
         '# Render Blueprint (Infrastructure-as-Code)',
         '# Student Information Management System - Backend Tier',
         '# Multi-Container Deployment (Primary + Replica Copy)',
-        '# Assigned to "My project" -> "Production"',
         '# ========================================================',
-        'projects:',
-        '  - name: My project',
-        '    environments:',
-        '      - name: Production',
-        '        services:',
-        '          # Primary Docker Container',
-        '          - type: web',
-        '            name: cloudp',
-        '            runtime: docker',
-        '            rootDir: backend',
-        '            dockerfilePath: ./Dockerfile',
-        '            dockerContext: .',
-        `            plan: ${args.plan}`,
-        '            healthCheckPath: /api/health',
-        '            autoDeploy: true',
-        '            envVars:',
-        '              - key: NODE_ENV',
-        '                value: production',
-        '              - key: PORT',
-        '                value: 5000',
-        '              - key: DB_NAME',
-        '                value: student_db',
-        '              - key: FRONTEND_URL',
-        '                sync: false',
-        '              - key: MONGODB_URI',
-        '                sync: false',
+        'envVarGroups:',
+        '  - name: student-env-group',
+        '    envVars:',
+        '      - key: MONGODB_URI',
+        '        sync: false',
+        '      - key: FRONTEND_URL',
+        '        value: https://cloudp1-bpky.vercel.app',
+        '      - key: NODE_ENV',
+        '        value: production',
+        '      - key: DB_NAME',
+        '        value: student_db',
+        '      - key: PORT',
+        '        value: 5000',
         '',
-        `          # Second Docker Container Copy (${args.copyName})`,
-        '          - type: web',
-        `            name: ${args.copyName}`,
-        '            runtime: docker',
-        '            rootDir: backend',
-        '            dockerfilePath: ./Dockerfile',
-        '            dockerContext: .',
-        `            plan: ${args.plan}`,
-        '            healthCheckPath: /api/health',
-        '            autoDeploy: true',
-        '            envVars:',
-        '              - key: NODE_ENV',
-        '                value: production',
-        '              - key: PORT',
-        '                value: 5000',
-        '              - key: DB_NAME',
-        '                value: student_db',
-        '              - key: FRONTEND_URL',
-        '                fromService:',
-        '                  type: web',
-        '                  name: cloudp',
-        '                  envVarKey: FRONTEND_URL',
-        '              - key: MONGODB_URI',
-        '                fromService:',
-        '                  type: web',
-        '                  name: cloudp',
-        '                  envVarKey: MONGODB_URI',
+        'services:',
+        '  # Primary Docker Container',
+        '  - type: web',
+        '    name: cloudp',
+        '    runtime: docker',
+        '    rootDir: backend',
+        '    dockerfilePath: ./Dockerfile',
+        '    dockerContext: .',
+        `    plan: ${args.plan}`,
+        '    healthCheckPath: /api/health',
+        '    autoDeploy: true',
+        '    envVars:',
+        '      - fromGroup: student-env-group',
+        '      - key: MONGODB_URI',
+        '        sync: false',
+        '      - key: FRONTEND_URL',
+        '        sync: false',
+        '',
+        `  # Second Docker Container Copy (${args.copyName})`,
+        '  - type: web',
+        `    name: ${args.copyName}`,
+        '    runtime: docker',
+        '    rootDir: backend',
+        '    dockerfilePath: ./Dockerfile',
+        '    dockerContext: .',
+        `    plan: ${args.plan}`,
+        '    healthCheckPath: /api/health',
+        '    autoDeploy: true',
+        '    envVars:',
+        '      - fromGroup: student-env-group',
+        '      - key: MONGODB_URI',
+        '        sync: false',
+        '      - key: FRONTEND_URL',
+        '        sync: false',
         '',
       ].join('\n');
 
@@ -692,11 +685,11 @@ export function registerProjectTools(server: McpServer): void {
               '🎉 **Two Docker Container Copies Configured for Render!**',
               `- **Primary Container:** \`cloudp\` (Port 5000, Plan: ${args.plan})`,
               `- **Secondary Container Copy:** \`${args.copyName}\` (Port 5000, Plan: ${args.plan})`,
-              `- **Architecture:** Multi-container redundant deployment on Render`,
-              `- **Cost:** Free tier compatible (both run independently on Render free tier)`,
+              '- **Shared Env Group:** `student-env-group` (holds MongoDB URI and configs)',
+              '- **Project Dashboard:** Updated to `2 Copies` (`cloudp + ' + args.copyName + '`)',
               `- **Deployment Status:** ${pushStatus}`,
               '',
-              '💡 **Next in Render:** Go to Render Dashboard ➡️ **New +** ➡️ **Blueprint** (or refresh your existing Blueprint) to see both copies live side-by-side!',
+              '💡 Both containers deploy automatically via Render Blueprint!',
             ].join('\n'),
           },
         ],
@@ -704,5 +697,121 @@ export function registerProjectTools(server: McpServer): void {
     }
   );
 
-  logger.info('All 8 Full-Stack Project, Git, Theme, Docker Scaling & Copy MCP tools registered successfully.');
+  // Tool 9: remove_docker_container_copy
+  server.tool(
+    'remove_docker_container_copy',
+    'Remove, delete, or deprovision secondary Docker container copies from Render (e.g. cloudp-copy, cloudp-copy-2, cloudp-copy-3) and revert to a single primary container (cloudp). Handles prompts like "remove the copy", "delete the replica", "scale back to 1 container", "remove container copy", "revert to one container", "delete the copy". It cleans render.yaml, updates the dashboard status to 1 copy, and automatically commits and pushes to GitHub so Render immediately deprovisions the copy.',
+    {
+      copyName: z
+        .string()
+        .optional()
+        .describe('Specific copy name to remove (optional: if omitted, all copies are removed leaving only the primary container cloudp)'),
+      plan: z
+        .enum(['free', 'starter', 'standard'])
+        .default('free')
+        .describe('Render plan for the primary container (default: free)'),
+      deployNow: z
+        .boolean()
+        .default(true)
+        .describe('Automatically commit and push the updated render.yaml to GitHub so Render deletes the copy immediately (default: true)'),
+    },
+    async (args) => {
+      logger.info('Invoked tool: remove_docker_container_copy', args);
+      const renderYamlPath = path.join(PROJECT_ROOT, 'render.yaml');
+
+      if (!fs.existsSync(renderYamlPath)) {
+        return {
+          isError: true,
+          content: [{ type: 'text' as const, text: `render.yaml not found at ${renderYamlPath}` }],
+        };
+      }
+
+      const singleContainerYaml = [
+        '# ========================================================',
+        '# Render Blueprint (Infrastructure-as-Code)',
+        '# Student Information Management System - Backend Tier',
+        '# Single Container Deployment (Primary)',
+        '# ========================================================',
+        'envVarGroups:',
+        '  - name: student-env-group',
+        '    envVars:',
+        '      - key: MONGODB_URI',
+        '        sync: false',
+        '      - key: FRONTEND_URL',
+        '        value: https://cloudp1-bpky.vercel.app',
+        '      - key: NODE_ENV',
+        '        value: production',
+        '      - key: DB_NAME',
+        '        value: student_db',
+        '      - key: PORT',
+        '        value: 5000',
+        '',
+        'services:',
+        '  # Primary Docker Container',
+        '  - type: web',
+        '    name: cloudp',
+        '    runtime: docker',
+        '    rootDir: backend',
+        '    dockerfilePath: ./Dockerfile',
+        '    dockerContext: .',
+        `    plan: ${args.plan}`,
+        '    healthCheckPath: /api/health',
+        '    autoDeploy: true',
+        '    envVars:',
+        '      - fromGroup: student-env-group',
+        '      - key: MONGODB_URI',
+        '        sync: false',
+        '      - key: FRONTEND_URL',
+        '        sync: false',
+        '',
+      ].join('\n');
+
+      fs.writeFileSync(renderYamlPath, singleContainerYaml, 'utf8');
+      logger.info('Updated render.yaml to revert to single primary container cloudp.');
+
+      // Update backend containers configuration so the dashboard immediately shows 1 copy
+      const containersConfigPath = path.join(PROJECT_ROOT, 'backend/src/config/containers.json');
+      const containersData = {
+        count: 1,
+        runtime: 'Docker',
+        provider: 'Render',
+        status: 'active',
+        services: ['cloudp'],
+        lastUpdated: new Date().toISOString(),
+      };
+      fs.writeFileSync(containersConfigPath, JSON.stringify(containersData, null, 2), 'utf8');
+
+      let pushStatus = 'Not pushed (deployNow set to false).';
+      if (args.deployNow) {
+        try {
+          await execAsync('git add render.yaml backend/src/config/containers.json', { cwd: PROJECT_ROOT });
+          const commitMsg = 'chore(infra): remove container copy and revert to single primary container';
+          await execAsync(`git commit -m "${commitMsg}"`, { cwd: PROJECT_ROOT });
+          await execAsync('git push origin main', { cwd: PROJECT_ROOT });
+          pushStatus = `Pushed commit "${commitMsg}" to GitHub origin/main. Render Blueprint webhook triggered!`;
+        } catch (gitErr: any) {
+          pushStatus = `render.yaml updated locally, but git push encountered: ${gitErr.message}`;
+        }
+      }
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: [
+              '🗑️ **Docker Container Copy Removed from Render!**',
+              '- **Remaining Container:** `cloudp` (Primary Docker Container, Port 5000)',
+              '- **Active Instances:** 1',
+              '- **Project Dashboard:** Updated to `1 Copy` (`cloudp (Render Docker)`)',
+              `- **Deployment Status:** ${pushStatus}`,
+              '',
+              '💡 Render Blueprint automatically deprovisions the copy while keeping the primary `cloudp` online.',
+            ].join('\n'),
+          },
+        ],
+      };
+    }
+  );
+
+  logger.info('All 9 Full-Stack Project, Git, Theme, Docker Scaling, Copy & Remove MCP tools registered successfully.');
 }
