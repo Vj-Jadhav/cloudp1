@@ -26,7 +26,7 @@ services:
       - key: MONGODB_URI
         sync: false
 
-  # Second Docker Container Copy
+  # Second Docker Container Copy (cloudp-copy)
   - type: web
     name: cloudp-copy
     runtime: docker
